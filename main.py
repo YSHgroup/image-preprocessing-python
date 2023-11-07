@@ -6,10 +6,6 @@ import pytesseract
 from imutils import rotate_bound
 from skimage.metrics import structural_similarity as ssim
 
-# def increament_count():
-#     global global_count
-#     global_count += 1
-#     return global_count
 
 def detect_tilted_image(image: Image):
     image = np.array(image)
@@ -35,16 +31,16 @@ def rotate_image(image):
     image = np.array(image)
     
     # # Convert the image to RGB channel ordering
-    # rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
     try:
         # Use Tesseract to determine the text orientation
-        # results = pytesseract.image_to_osd(rgb, output_type=pytesseract.Output.DICT)
+        results = pytesseract.image_to_osd(rgb, output_type=pytesseract.Output.DICT)
 
         # Extract the rotation angle from the orientation information
-        # rotation_angle = int(results["rotate"])
+        rotation_angle = int(results["rotate"])
         
-        rotation_angle = detect_tilted_image(image)
+        # rotation_angle = detect_tilted_image(image)
         # Rotate the image by the calculated angle to correct the text orientation
         rotated_image = rotate_bound(image, rotation_angle)
         print('no error handled')
@@ -53,7 +49,6 @@ def rotate_image(image):
         # If Tesseract can't detect the orientation, assume it's not tilted
         rotated_image = rotate_bound(image, 0)
         print('error handled')
-        # increament_count()
         rotate_image = Image.fromarray(rotated_image)
     finally: 
         return rotate_image
@@ -124,7 +119,6 @@ def main():
     # images_in_folder = []
     path_recursion(input_folder)
 
-    # print('Total Error-->', global_count)
 
 if __name__ == '__main__':
     main()
