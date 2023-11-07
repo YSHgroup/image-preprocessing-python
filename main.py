@@ -11,7 +11,7 @@ def rotate_image(image):
     
     # Convert the image to RGB channel ordering
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    print('rotate-rgb->', rgb)
+    # print('rotate-rgb->', rgb)
 
     # Use Tesseract to determine the text orientation
     results = pytesseract.image_to_osd(rgb, output_type=pytesseract.Output.DICT)
@@ -21,13 +21,16 @@ def rotate_image(image):
 
     # Rotate the image by the calculated angle to correct the text orientation
     rotated_image = rotate_bound(image, rotation_angle)
-
-    return rotated_image
+    rotate_image = Image.fromarray(rotated_image)
+    return rotate_image
 
 def enhance_image(image):
     image_array = np.array(image)
     
-    denoised_image_array = cv2.fastNlMeansDenoising(image_array)
+    blurred = cv2.GaussianBlur(image_array, (0, 0), 3)
+    sharpened = cv2.addWeighted(image_array, 1.5, blurred, -0.5, 0)
+    
+    denoised_image_array = cv2.fastNlMeansDenoising(sharpened)
     denoised_image = Image.fromarray(denoised_image_array)
     image_array = np.array(denoised_image)
     image = Image.fromarray(np.uint8(image_array))
@@ -51,5 +54,6 @@ def enhance_image(image):
 
 image = Image.open('./Dataset/pess.jpg')
 image = enhance_image(image)
+rotated = rotate_image(image)
 
-image.show()
+rotated.show()
