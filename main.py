@@ -4,9 +4,8 @@ import numpy as np
 from PIL import Image, ImageEnhance
 import pytesseract
 from imutils import rotate_bound
-from skimage.metrics import structural_similarity as ssim
 
-
+# Angle of rotation is detected using Tesseract OCR
 def detect_tilted_image(image: Image):
     image = np.array(image)
     # Convert the image to grayscale
@@ -19,28 +18,17 @@ def detect_tilted_image(image: Image):
     text = pytesseract.image_to_osd(threshold)
 
     # Extract the rotation angle from the OCR result
-    # angle = int(text.split('Rotate: ')[-1])
     text = text.split('Rotate: ')[-1].split('\n', 1)[0]
     angle = int(text.strip())
-    # print('angle-->', angle)
     return angle
 
-
+# Rotate the image by the calculated angle to correct the text orientation
 def rotate_image(image):
     # # Load the input image
     image = np.array(image)
     
-    # # Convert the image to RGB channel ordering
-    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    
     try:
-        # Use Tesseract to determine the text orientation
-        results = pytesseract.image_to_osd(rgb, output_type=pytesseract.Output.DICT)
-
-        # Extract the rotation angle from the orientation information
-        rotation_angle = int(results["rotate"])
-        
-        # rotation_angle = detect_tilted_image(image)
+        rotation_angle = detect_tilted_image(image)
         # Rotate the image by the calculated angle to correct the text orientation
         rotated_image = rotate_bound(image, rotation_angle)
         print('no error handled')
@@ -53,6 +41,7 @@ def rotate_image(image):
     finally: 
         return rotate_image
 
+# Enhance the image's brightness and contrast and sharpen the image
 def enhance_image(image):
     image_array = np.array(image)
     
@@ -63,8 +52,7 @@ def enhance_image(image):
     denoised_image = Image.fromarray(denoised_image_array)
     image_array = np.array(denoised_image)
     image = Image.fromarray(np.uint8(image_array))
-    # image = rotate_image(image)
-
+    
     # Create an ImageEnhance object and apply the enhancement
     enhancer = ImageEnhance.Sharpness(image)
     enhanced_image = enhancer.enhance(1.5)
@@ -79,34 +67,57 @@ def enhance_image(image):
     image = enhancer_contrast.enhance(2)
     return enhanced_image
 
+# Save the image to the output folder
 def image_save(path: str, image):
-    # slashes = path.count('/') + path.count('\\')
     last_backslash = path.rfind('\\')
     last_slash = path.rindex('/')
     last_point = max(last_backslash, last_slash)
     sliced = path[:last_point]
     if not os.path.exists(sliced):
         os.makedirs(sliced)
-    # print('slashes-->', slashes, path, sliced)
-    # cv2.imwrite(path, image)
     image.save(path)
 
+# Organize the image files in the dataset folder into the output folder
+# def path_recursion(input_path: str):
+#     for item in os.listdir(input_path):
+#         path_conbined = os.path.join(input_path, item)
+#         if os.path.isdir(path_conbined):
+#             print('in folder-->', path_conbined)
+#             path_recursion(path_conbined)
+#         if item.endswith(('.jpg', '.jpeg', 'png')):
+#             print('file-->', path_conbined)
+#             image = Image.open(path_conbined)
+#             enhanced_rotated = rotate_image(image)
+#             enhanced = enhance_image(enhanced_rotated)
+#             output_path = './output' + path_conbined.replace('./Dataset', '')
+#             image_save(output_path, enhanced)
+
+# Recursive function to process files and folders in a specified path
 def path_recursion(input_path: str):
-    # image_array = []
     for item in os.listdir(input_path):
+        # Combine the input path with the current item
         path_conbined = os.path.join(input_path, item)
+        
+        # If the item is a folder, print it and recursively call the function on that folder
         if os.path.isdir(path_conbined):
             print('in folder-->', path_conbined)
             path_recursion(path_conbined)
+            
+        # If the item is a file with a .jpg, .jpeg, or .png extension, perform image processing operations
         if item.endswith(('.jpg', '.jpeg', 'png')):
             print('file-->', path_conbined)
             image = Image.open(path_conbined)
             enhanced_rotated = rotate_image(image)
             enhanced = enhance_image(enhanced_rotated)
-            output_path = './output' + path_conbined.replace('./Dataset', '')
-            image_save(output_path, enhanced)
             
+            # Generate the output path by replacing the source directory with './output' in the original path
+            output_path = './output' + path_conbined.replace('./Dataset', '')
+            
+            # Save the enhanced image to the output path
+            image_save(output_path, enhanced)
 
+
+# Main content of the script 
 def main():
     input_folder = './Dataset'
     output_folder = './output'
@@ -114,11 +125,8 @@ def main():
     if not os.path.exists(input_folder):
         os.makedirs(output_folder)
 
-    # image_array = []
-    # folder_array = []
-    # images_in_folder = []
     path_recursion(input_folder)
 
-
+# Run this script
 if __name__ == '__main__':
     main()
