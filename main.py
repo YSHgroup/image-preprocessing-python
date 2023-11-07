@@ -77,21 +77,6 @@ def image_save(path: str, image):
         os.makedirs(sliced)
     image.save(path)
 
-# Organize the image files in the dataset folder into the output folder
-# def path_recursion(input_path: str):
-#     for item in os.listdir(input_path):
-#         path_conbined = os.path.join(input_path, item)
-#         if os.path.isdir(path_conbined):
-#             print('in folder-->', path_conbined)
-#             path_recursion(path_conbined)
-#         if item.endswith(('.jpg', '.jpeg', 'png')):
-#             print('file-->', path_conbined)
-#             image = Image.open(path_conbined)
-#             enhanced_rotated = rotate_image(image)
-#             enhanced = enhance_image(enhanced_rotated)
-#             output_path = './output' + path_conbined.replace('./Dataset', '')
-#             image_save(output_path, enhanced)
-
 # Recursive function to process files and folders in a specified path
 def path_recursion(input_path: str):
     for item in os.listdir(input_path):

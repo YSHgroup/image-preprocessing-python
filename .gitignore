@@ -2,5 +2,5 @@
 *.log
 dist
 node_modules
-
+.venv
 
