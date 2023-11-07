@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 from PIL import Image, ImageEnhance
@@ -50,6 +51,13 @@ def enhance_image(image):
     image = enhancer_contrast.enhance(2)
     return enhanced_image
 
+def main():
+    input_folder = './Dataset'
+    output_folder = './output'
+
+    if not os.path.exists(input_folder):
+        os.makedirs(output_folder)
+        
 
 
 image = Image.open('./Dataset/pess.jpg')
@@ -57,3 +65,6 @@ image = enhance_image(image)
 rotated = rotate_image(image)
 
 rotated.show()
+
+if __name__ == '__main__':
+    main()
