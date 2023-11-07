@@ -18,6 +18,18 @@
 - The code is well-optimized and easy to maintain.
 - The code is well-designed and easy to maintain.
 
+## Installation
+```
+  pip install opencv-python
+  pip install pytesseract
+  pip install numpy
+  pip install Pillow
+  pip install imutils
+
+  python main.py
+
+```
+
 ### `Reviewed from Professional Standards and some issues raised will be addressed at a later.`
 
 # Code Review
@@ -65,18 +77,6 @@ The code includes basic error handling for cases where Tesseract OCR fails to de
 ## Conclusion
 > Overall, the code is well-structured and follows best practices for image processing in Python. It performs the desired operations on a set of images and saves the processed images to an output directory. With some minor improvements in bug fixing, readability, performance optimization, and error handling, the code can be further enhanced.
 
-## To Run
-
-```
-  pip install opencv-python
-  pip install pytesseract
-  pip install numpy
-  pip install Pillow
-  pip install imutils
-
-  python main.py
-
-```
 
 ### If you have any questions, please contact me at <EMAIL>david.dev100@outlook.com or <SKYPE>live:.cid.abe2f56b5909b6ab
 
