@@ -2,7 +2,27 @@ import cv2
 import numpy as np
 from PIL import Image, ImageEnhance
 import pytesseract
+from imutils import rotate_bound
 from skimage.metrics import structural_similarity as ssim
+
+def rotate_image(image):
+    # Load the input image
+    image = np.array(image)
+    
+    # Convert the image to RGB channel ordering
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    print('rotate-rgb->', rgb)
+
+    # Use Tesseract to determine the text orientation
+    results = pytesseract.image_to_osd(rgb, output_type=pytesseract.Output.DICT)
+
+    # Extract the rotation angle from the orientation information
+    rotation_angle = int(results["rotate"])
+
+    # Rotate the image by the calculated angle to correct the text orientation
+    rotated_image = rotate_bound(image, rotation_angle)
+
+    return rotated_image
 
 def enhance_image(image):
     image_array = np.array(image)
@@ -28,7 +48,8 @@ def enhance_image(image):
     return enhanced_image
 
 
-image = Image.open('./Dataset/sha.jpeg')
+
+image = Image.open('./Dataset/pess.jpg')
 image = enhance_image(image)
 
 image.show()
