@@ -1,23 +1,34 @@
-# This is a sample Python script.
+import cv2
+import numpy as np
+from PIL import Image, ImageEnhance
+import pytesseract
+from skimage.metrics import structural_similarity as ssim
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def enhance_image(image):
+    image_array = np.array(image)
+    
+    denoised_image_array = cv2.fastNlMeansDenoising(image_array)
+    denoised_image = Image.fromarray(denoised_image_array)
+    image_array = np.array(denoised_image)
+    image = Image.fromarray(np.uint8(image_array))
+    # image = rotate_image(image)
+
+    # Create an ImageEnhance object and apply the enhancement
+    enhancer = ImageEnhance.Sharpness(image)
+    enhanced_image = enhancer.enhance(1.5)
+
+    # Create an enhancer object
+    enhancer = ImageEnhance.Brightness(image)
+    # Increase the brightness by a factor of 1.5
+    enhanced_image = enhancer.enhance(1.5)
+    
+    # Enhance the image's contrast
+    enhancer_contrast = ImageEnhance.Contrast(image)
+    image = enhancer_contrast.enhance(2)
+    return enhanced_image
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+image = Image.open('./Dataset/sha.jpeg')
+image = enhance_image(image)
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
-txt = "I love apples/, apple ar\e my favo/rite \fruit"
-
-x = txt.count("/") + txt.count('\f')
-i = txt.rindex('/')
-i_1 = txt.rindex('\\')
-print(x, i, i_1)
-print(max(i, i_1))
+image.show()
